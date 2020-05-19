@@ -20,6 +20,71 @@ const ConfigModule = require('./modules/config-module')
 const configModule = new ConfigModule(functions.config())
 const config = configModule.getAll()
 
+// [START Search API trigger]
+/**
+ * Search API trigger
+ * HTTP リクエスト経由で関数を呼び出す
+ * @link https://firebase.google.com/docs/functions/http-events?hl=ja
+ */
+exports.search = functions.https.onRequest((request, response) => {
+    cors(request, response, () => {
+        compression(request, response, () => {
+            /**
+             * Twitter for Node.js
+             * @link https://www.npmjs.com/package/twitter
+             */
+            const TwitterClient = require('twitter')
+            /**
+             * Twitter Module
+             */
+            const TwitterModule = require('./modules/twitter-module')
+            /**
+             * A simple in-memory cache for node.js
+             * @link https://www.npmjs.com/package/memory-cache
+             */
+            const cache = require('memory-cache')
+
+            const twitterConf = config.twitter
+            const twitterModule = new TwitterModule(
+                new TwitterClient(twitterConf.credential),
+                cache)
+
+            let options = {}
+            if ('since_id' in request && request.since_id) {
+                options.since_id = request.since_id
+            }
+            if ('count' in request && request.count) {
+                options.count = request.count
+            }
+            if('search' in twitterConf) {
+                const searchConf = twitterConf.search
+                if ('q' in searchConf && searchConf.q) {
+                    options.q = searchConf.q
+                }
+                if ('count_limit' in searchConf && searchConf.count_limit) {
+                    options.count_limit = searchConf.count_limit
+                }
+            }
+
+            twitterModule.search(options, (result, error) => {
+                if (error) {
+                    response.status(500).json(error)
+                } else {
+                    /**
+                     *  Firebase - Cache-Control を設定する
+                     * @link https://firebase.google.com/docs/hosting/functions?hl=ja#set_cache_control
+                     */
+                    response
+                        .set('Cache-Control', 'public, max-age=300, s-maxage=600')
+                        .type('json')
+                        .status(200).json(result)
+                }
+            })
+        })
+    })
+})
+// [END Search API trigger]
+
 // [START Topics API trigger]
 /**
  * Topics API trigger
