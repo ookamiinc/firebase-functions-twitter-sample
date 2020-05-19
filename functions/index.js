@@ -50,11 +50,11 @@ exports.search = functions.https.onRequest((request, response) => {
                 cache)
 
             let options = {}
-            if ('since_id' in request && request.since_id) {
-                options.since_id = request.since_id
+            if ('since_id' in request.query) {
+                options.since_id = request.query.since_id
             }
-            if ('count' in request && request.count) {
-                options.count = request.count
+            if ('count' in request.query) {
+                options.count = request.query.count
             }
             if('search' in twitterConf) {
                 const searchConf = twitterConf.search
@@ -65,8 +65,8 @@ exports.search = functions.https.onRequest((request, response) => {
                     options.count_limit = searchConf.count_limit
                 }
             }
-            if ('q' in request && request.q) {
-                options.q = request.q
+            if ('q' in request.query) {
+                options.q = request.query.q
             }
 
             twitterModule.search(options, (result, error) => {
