@@ -65,6 +65,9 @@ exports.search = functions.https.onRequest((request, response) => {
                     options.count_limit = searchConf.count_limit
                 }
             }
+            if ('q' in request && request.q) {
+                options.q = request.q
+            }
 
             twitterModule.search(options, (result, error) => {
                 if (error) {
