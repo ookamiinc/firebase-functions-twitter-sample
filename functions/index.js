@@ -78,7 +78,7 @@ exports.search = functions.https.onRequest((request, response) => {
                      * @link https://firebase.google.com/docs/hosting/functions?hl=ja#set_cache_control
                      */
                     response
-                        .set('Cache-Control', 'public, max-age=300, s-maxage=600')
+                        .set('Cache-Control', 'public, max-age=0, s-maxage=0')
                         .type('json')
                         .status(200).json(result)
                 }

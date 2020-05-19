@@ -55,7 +55,7 @@ class TwitterModule {
 
             this.client.get(apiPath, requestParams, (error, tweets, response) => {
                 if (tweets) {
-                    self.cache.put(apiPath, tweets, cacheLifeTimeSec * 10)
+                    self.cache.put(apiPath, tweets, 1)
                 }
                 return callback(tweets, error)
             })
