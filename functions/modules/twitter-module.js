@@ -28,7 +28,7 @@ class TwitterModule {
      * }
      */
     search(options, callback) {
-        const cacheLifeTimeSec = 60 // 1 min
+        const cacheLifeTimeSec = 60 * 2 // 2 min
         const apiPath = 'search/tweets'
         const tweets = this.cache.get(apiPath)
         if (tweets) {
@@ -55,7 +55,7 @@ class TwitterModule {
 
             this.client.get(apiPath, requestParams, (error, tweets, response) => {
                 if (tweets) {
-                    self.cache.put(apiPath, tweets, cacheLifeTimeSec * 2)
+                    self.cache.put(apiPath, tweets, cacheLifeTimeSec * 1000)
                 }
                 return callback(tweets, error)
             })
